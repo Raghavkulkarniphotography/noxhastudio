@@ -1,1 +1,421 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOXHA | Design, Photo, Film</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        noxha: '#A92654',
+                        black: '#111111',
+                        white: '#ffffff',
+                        paper: '#fdfdfd',
+                        gray: '#f4f4f4',
+                        border: '#e5e5e5',
+                        subtext: '#666666'
+                    },
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                    },
+                    letterSpacing: {
+                        widest: '.25em',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base Styles */
+        body { background-color: #ffffff; color: #111111; overflow-x: hidden; }
 
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fff; }
+        ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #A92654; }
+
+        /* Text Stroke Effect */
+        .text-outline { 
+            -webkit-text-stroke: 1px #111111;
+            color: transparent; 
+            transition: all 0.5s ease; 
+        }
+        .text-outline:hover { 
+            -webkit-text-stroke: 0px; 
+            color: #A92654;
+        }
+
+        /* General Reveal Animations */
+        .fade-up { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .fade-up.active { opacity: 1; transform: translateY(0); }
+
+        /* Hero Animation Helpers */
+        .hero-text-holder { overflow: hidden; display: block; line-height: 1; }
+        .hero-text { animation: slideUp 1s ease-out forwards; } 
+        
+        /* Video Reset */
+        video { display: block; opacity: 1 !important; visibility: visible !important; }
+
+        /* Delays */
+        .delay-100 { animation-delay: 0.1s; transition-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; transition-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; transition-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; transition-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; transition-delay: 0.5s; }
+
+        /* Bracket Button */
+        .btn-bracket::before { content: '['; margin-right: 8px; color: #A92654; transition: all 0.3s; opacity: 0.7; }
+        .btn-bracket::after { content: ']'; margin-left: 8px; color: #A92654; transition: all 0.3s; opacity: 0.7; }
+        .btn-bracket:hover::before { margin-right: 15px; opacity: 1; }
+        .btn-bracket:hover::after { margin-left: 15px; opacity: 1; }
+
+        /* Outline Button Style for Brochure */
+        .btn-outline {
+            border: 1px solid #111111;
+            transition: all 0.3s ease;
+        }
+        .btn-outline:hover {
+            background-color: #111111;
+            color: #ffffff;
+        }
+
+        /* Image Zoom */
+        .img-zoom-container { overflow: hidden; }
+        .img-zoom { transition: transform 0.7s ease; }
+        .group:hover .img-zoom { transform: scale(1.05); }
+
+        /* 3D Canvas Background */
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Behind content */
+            pointer-events: none; /* Let clicks pass through */
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="selection:bg-noxha selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 px-6 py-6 flex justify-between items-center bg-white/80 backdrop-blur-md border-b border-border">
+        <a href="#" class="block hover:scale-105 transition-transform duration-300">
+            <img src="./noxha-logo.png" alt="NOXHA Logo" class="w-10 h-10 md:w-12 md:h-12 object-contain" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
+            <span id="logo-text" class="hidden text-2xl font-display font-bold tracking-tighter text-black">NOXHA</span>
+        </a>
+        <div class="hidden md:flex gap-12 text-xs font-semibold tracking-widest uppercase text-black">
+            <a href="#about" class="hover:text-noxha transition-colors nav-link">> About</a>
+            <a href="#services" class="hover:text-noxha transition-colors nav-link">> Services</a>
+            <a href="#process" class="hover:text-noxha transition-colors nav-link">> Process</a>
+            <a href="#contact" class="hover:text-noxha transition-colors text-noxha nav-link">> Start Project</a>
+        </div>
+        <button class="md:hidden text-sm font-bold uppercase tracking-widest border border-black/20 px-4 py-2 rounded-full hover:bg-black hover:text-white transition-colors" onclick="document.getElementById('mobile-menu').classList.remove('translate-x-full')">Menu</button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 bg-white z-[60] flex flex-col justify-center items-center gap-8 text-3xl font-display font-bold uppercase translate-x-full transition-transform duration-500 ease-in-out md:hidden">
+        <button onclick="document.getElementById('mobile-menu').classList.add('translate-x-full')" class="absolute top-6 right-6 text-sm font-sans text-subtext border border-black/10 px-4 py-2 rounded-full">Close [x]</button>
+        <a href="#about" onclick="document.getElementById('mobile-menu').classList.add('translate-x-full')" class="text-black">About</a>
+        <a href="#services" onclick="document.getElementById('mobile-menu').classList.add('translate-x-full')" class="text-black">Services</a>
+        <a href="#process" onclick="document.getElementById('mobile-menu').classList.add('translate-x-full')" class="text-black">Process</a>
+        <a href="#contact" onclick="document.getElementById('mobile-menu').classList.add('translate-x-full')" class="text-noxha">Start Project</a>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="min-h-screen flex flex-col justify-center px-6 md:px-12 pt-28 pb-12 relative overflow-hidden bg-paper text-center">
+        
+        <!-- 3D Background Layer (Subtle floating elements) -->
+        <div id="canvas-container"></div>
+
+        <!-- Content Layer -->
+        <div class="max-w-7xl w-full mx-auto z-10 flex flex-col items-center relative">
+            
+            <!-- VIDEO LOGO ANIMATION (Your main visual) -->
+            <div class="w-full max-w-6xl mx-auto mb-4 flex justify-center z-10 relative">
+                <video autoplay muted playsinline loop class="w-full md:w-full lg:w-11/12 aspect-video object-contain bg-transparent relative z-20">
+                    <source src="./fins%20noxha.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <!-- Subtitle -->
+            <div class="flex items-center gap-4 mb-6 z-10 relative">
+                <span class="h-[1px] w-8 md:w-16 bg-noxha"></span>
+                <span class="text-[10px] md:text-xs font-bold tracking-widest uppercase text-subtext">Design | Photo | Film</span>
+                <span class="h-[1px] w-8 md:w-16 bg-noxha"></span>
+            </div>
+
+            <!-- MAIN HEADLINE -->
+            <h1 class="text-4xl md:text-6xl lg:text-8xl font-display font-bold leading-[0.9] tracking-tighter mb-6 text-black z-10 relative">
+                <div class="hero-text-holder"><span class="block hero-text delay-300">Architects of</span></div>
+                <div class="hero-text-holder"><span class="block hero-text delay-400 text-outline cursor-default">Visual</span></div>
+                <div class="hero-text-holder"><span class="block hero-text delay-500">Identity.</span></div>
+            </h1>
+
+            <!-- Paragraph & CTA -->
+            <div class="flex flex-col items-center gap-6 mt-2 z-10 relative">
+                <p class="max-w-xl text-subtext text-base md:text-lg leading-relaxed mb-6">
+                    NOXHA is a creative studio co-founded by a designer & photographer. We build brands through memorable, honest, and visually strong narratives.
+                </p>
+                
+                <!-- CTA Buttons Container -->
+                <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 items-center">
+                    <a href="#contact" class="btn-bracket text-black text-xs md:text-sm font-bold tracking-widest uppercase hover:text-noxha transition-colors">
+                        Inquire Now
+                    </a>
+                    
+                    <!-- DOWNLOAD BROCHURE BUTTON -->
+                    <a href="./noxha%20yay.pdf" download class="btn-outline text-black text-xs md:text-sm font-bold tracking-widest uppercase px-6 py-3 rounded-full flex items-center gap-2 hover:border-black transition-colors">
+                        <span>Download Brochure</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Services -->
+    <section id="services" class="py-20 md:py-32 px-6 md:px-12 bg-white relative z-10">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-end mb-12 md:mb-20 pb-4 border-b border-black/10 fade-up">
+                <h2 class="text-3xl md:text-6xl font-display font-bold text-black">[ SERVICES ]</h2>
+                <span class="text-[10px] md:text-xs font-bold tracking-widest text-noxha uppercase hidden md:block">What We Do</span>
+            </div>
+            <div class="flex flex-col">
+                <!-- Service 1 -->
+                <div class="group border-b border-black/10 py-8 md:py-12 hover:bg-gray transition-all duration-500 fade-up delay-100 cursor-pointer">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start">
+                        <span class="hidden md:block col-span-1 text-sm font-mono text-noxha opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-x-[-10px] group-hover:translate-x-0">01</span>
+                        <h3 class="col-span-1 md:col-span-4 text-2xl md:text-3xl font-display font-bold text-black group-hover:text-noxha transition-colors">Design</h3>
+                        <p class="col-span-1 md:col-span-5 text-subtext text-sm md:text-base leading-relaxed group-hover:text-black transition-colors">Brand Identity, Logo Systems, Packaging, UI/UX, and Editorial Layouts.</p>
+                        <div class="col-span-1 md:col-span-2 flex justify-end"><span class="text-xl md:text-2xl text-black group-hover:rotate-45 group-hover:text-noxha transition-transform duration-300">↗</span></div>
+                    </div>
+                </div>
+                <!-- Service 2 -->
+                <div class="group border-b border-black/10 py-8 md:py-12 hover:bg-gray transition-all duration-500 fade-up delay-200 cursor-pointer">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start">
+                        <span class="hidden md:block col-span-1 text-sm font-mono text-noxha opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-x-[-10px] group-hover:translate-x-0">02</span>
+                        <h3 class="col-span-1 md:col-span-4 text-2xl md:text-3xl font-display font-bold text-black group-hover:text-noxha transition-colors">Photography</h3>
+                        <p class="col-span-1 md:col-span-5 text-subtext text-sm md:text-base leading-relaxed group-hover:text-black transition-colors">Product, Portrait, and Lifestyle photography. Imagery that makes your brand feel premium.</p>
+                        <div class="col-span-1 md:col-span-2 flex justify-end"><span class="text-xl md:text-2xl text-black group-hover:rotate-45 group-hover:text-noxha transition-transform duration-300">↗</span></div>
+                    </div>
+                </div>
+                <!-- Service 3 -->
+                <div class="group border-b border-black/10 py-8 md:py-12 hover:bg-gray transition-all duration-500 fade-up delay-300 cursor-pointer">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start">
+                        <span class="hidden md:block col-span-1 text-sm font-mono text-noxha opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-x-[-10px] group-hover:translate-x-0">03</span>
+                        <h3 class="col-span-1 md:col-span-4 text-2xl md:text-3xl font-display font-bold text-black group-hover:text-noxha transition-colors">Film</h3>
+                        <p class="col-span-1 md:col-span-5 text-subtext text-sm md:text-base leading-relaxed group-hover:text-black transition-colors">Brand story films, commercial shorts, and campaign direction. Motion that connects.</p>
+                        <div class="col-span-1 md:col-span-2 flex justify-end"><span class="text-xl md:text-2xl text-black group-hover:rotate-45 group-hover:text-noxha transition-transform duration-300">↗</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process -->
+    <section id="process" class="py-20 px-6 md:px-12 bg-gray relative z-10">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-12 md:mb-20 fade-up">
+                <span class="text-[10px] md:text-xs font-bold tracking-widest text-noxha uppercase block mb-4">[ The Approach ]</span>
+                <h2 class="text-3xl md:text-5xl font-display font-bold max-w-3xl leading-tight text-black">Every decision is backed by narrative and brand logic.</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-px bg-transparent md:bg-black/5 border-0 md:border border-black/5">
+                <div class="bg-white p-6 md:p-8 hover:bg-paper transition-colors duration-300 group fade-up delay-100"><span class="text-noxha text-sm font-mono mb-6 block">[ 01 ]</span><h3 class="text-xl font-bold mb-4 text-black">Understand</h3><p class="text-subtext text-sm">Deep dive into brand goals, voice, and emotional tone.</p></div>
+                <div class="bg-white p-6 md:p-8 hover:bg-paper transition-colors duration-300 group fade-up delay-200"><span class="text-noxha text-sm font-mono mb-6 block">[ 02 ]</span><h3 class="text-xl font-bold mb-4 text-black">Direction</h3><p class="text-subtext text-sm">Moodboards, style language, color & typography.</p></div>
+                <div class="bg-white p-6 md:p-8 hover:bg-paper transition-colors duration-300 group fade-up delay-300"><span class="text-noxha text-sm font-mono mb-6 block">[ 03 ]</span><h3 class="text-xl font-bold mb-4 text-black">Create</h3><p class="text-subtext text-sm">Rigorous execution of design, photography, and film.</p></div>
+                <div class="bg-white p-6 md:p-8 hover:bg-paper transition-colors duration-300 group fade-up delay-400"><span class="text-noxha text-sm font-mono mb-6 block">[ 04 ]</span><h3 class="text-xl font-bold mb-4 text-black">Refine</h3><p class="text-subtext text-sm">Final assets, brand kit, rollout guidelines.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Founders -->
+    <section id="about" class="py-20 md:py-32 px-6 md:px-12 bg-white relative z-10">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-32">
+                <!-- Bhakti -->
+                <div class="relative group fade-up">
+                    <div class="img-zoom-container h-[400px] md:h-[500px] w-full bg-gray mb-8 relative rounded-lg md:rounded-none overflow-hidden">
+                        <img src="./bhakti-image.jpg" alt="Bhakti Kulkarni" class="img-zoom absolute inset-0 w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700">
+                    </div>
+                    <div class="flex justify-between items-baseline border-b border-black/10 pb-4 mb-4">
+                        <h3 class="text-xl md:text-2xl font-bold text-black group-hover:text-noxha transition-colors">Bhakti Kulkarni</h3>
+                        <span class="text-[10px] md:text-xs font-bold tracking-widest text-noxha uppercase">Designer</span>
+                    </div>
+                    <p class="text-subtext text-sm leading-relaxed">
+                        With a foundation from NID Ahmedabad, Bhakti leads the design philosophy at NOXHA. She specializes in translating complex brand values into clear, systematic visual identities. Her work spans brand systems, packaging, and editorial design, always prioritizing cultural sensitivity and intricate craftsmanship.
+                    </p>
+                </div>
+                <!-- Raghav -->
+                <div class="relative group md:mt-32 fade-up delay-200">
+                    <div class="img-zoom-container h-[400px] md:h-[500px] w-full bg-gray mb-8 relative rounded-lg md:rounded-none overflow-hidden">
+                        <img src="./raghav-photo.jpg" alt="Raghav Kulkarni" class="img-zoom absolute inset-0 w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700">
+                    </div>
+                    <div class="flex justify-between items-baseline border-b border-black/10 pb-4 mb-4">
+                        <h3 class="text-xl md:text-2xl font-bold text-black group-hover:text-noxha transition-colors">Raghav Kulkarni</h3>
+                        <span class="text-[10px] md:text-xs font-bold tracking-widest text-noxha uppercase">Visual Artist</span>
+                    </div>
+                    <p class="text-subtext text-sm leading-relaxed">
+                        A graduate of MIT Pune, Raghav bridges the gap between technical photography and creative direction. As a Visual Artist, he focuses on atmospheric storytelling and controlled lighting to create cinematic imagery. He ensures that every frame—whether still or moving—serves the larger brand narrative.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <section id="contact" class="py-20 md:py-32 px-6 md:px-12 border-t border-black/10 bg-white relative z-10">
+        <div class="max-w-7xl mx-auto text-center">
+            <h2 class="text-4xl md:text-8xl font-display font-bold mb-12 uppercase leading-[0.9] fade-up text-black">Let's Paint Your <br> <span class="text-noxha">Future.</span></h2>
+            <div class="flex flex-col md:flex-row justify-center gap-6 md:gap-8 mb-20 fade-up delay-100">
+                <a href="mailto:studionoxha@gmail.com" class="btn-bracket text-black text-base md:text-lg font-bold hover:text-noxha transition-colors">studionoxha@gmail.com</a>
+                <span class="hidden md:inline text-black/30">|</span>
+                <a href="tel:9421586636" class="btn-bracket text-black text-base md:text-lg font-bold hover:text-noxha transition-colors">+91 9421586636</a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-[10px] md:text-xs font-bold tracking-widest text-subtext uppercase border-t border-black/10 pt-12 fade-up delay-200">
+                <div class="text-center md:text-left"><p class="mb-2 text-black">Pune, India</p><p>Available Worldwide</p></div>
+                <div class="text-center"><a href="#" class="hover:text-noxha transition-colors mx-2">Instagram</a><a href="#" class="hover:text-noxha transition-colors mx-2">LinkedIn</a></div>
+                <div class="text-center md:text-right"><p>&copy; 2025 NOXHA Studio.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Scroll Animations
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+        });
+
+        // Three.js 3D Scene Setup
+        const initThreeJS = () => {
+            const container = document.getElementById('canvas-container');
+            if (!container) return;
+
+            // Scene
+            const scene = new THREE.Scene();
+            scene.background = null; // Transparent
+
+            // Camera
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            // Renderer
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            // --- 3D Objects Setup ---
+
+            // 1. LEFT CORNER: Abstract Geometric Shape (Design)
+            // Use an Icosahedron to represent structure and geometry
+            const geoDesign = new THREE.IcosahedronGeometry(1.2, 0); 
+            const matDesign = new THREE.MeshBasicMaterial({ 
+                color: 0x111111, // Black Wireframe
+                wireframe: true,
+                transparent: true,
+                opacity: 0.15 // Very subtle
+            });
+            const designObj = new THREE.Mesh(geoDesign, matDesign);
+            
+            // Position in top-left background area
+            designObj.position.set(-6, 2, -5); 
+            scene.add(designObj);
+
+            // 2. RIGHT CORNER: Abstract Lens Shape (Photography)
+            // Use a Torus (Ring) to represent a lens element
+            const geoPhoto = new THREE.TorusGeometry(1.0, 0.4, 16, 100);
+            const matPhoto = new THREE.MeshBasicMaterial({ 
+                color: 0xA92654, // NOXHA Magenta
+                wireframe: true,
+                transparent: true,
+                opacity: 0.15 // Very subtle
+            });
+            const photoObj = new THREE.Mesh(geoPhoto, matPhoto);
+            
+            // Position in bottom-right background area
+            photoObj.position.set(6, -2, -5);
+            scene.add(photoObj);
+
+            // Interactive Rotation Variables
+            let mouseX = 0;
+            let mouseY = 0;
+
+            // Mouse Move Event
+            document.addEventListener('mousemove', (event) => {
+                const windowHalfX = window.innerWidth / 2;
+                const windowHalfY = window.innerHeight / 2;
+                mouseX = (event.clientX - windowHalfX) * 0.0005; // Slower reaction
+                mouseY = (event.clientY - windowHalfY) * 0.0005;
+            });
+
+            // Animation Loop
+            const animate = () => {
+                requestAnimationFrame(animate);
+
+                // Constant slow float/rotation
+                designObj.rotation.x += 0.001;
+                designObj.rotation.y += 0.002;
+                
+                photoObj.rotation.x -= 0.001;
+                photoObj.rotation.y -= 0.002;
+
+                // Interactive Sway
+                designObj.rotation.x += (mouseY - designObj.rotation.x) * 0.05;
+                designObj.rotation.y += (mouseX - designObj.rotation.y) * 0.05;
+
+                photoObj.rotation.x += (mouseY - photoObj.rotation.x) * 0.05;
+                photoObj.rotation.y += (mouseX - photoObj.rotation.y) * 0.05;
+
+                renderer.render(scene, camera);
+            };
+
+            animate();
+
+            // Handle Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        };
+
+        // Initialize 3D after DOM load
+        initThreeJS();
+    </script>
+</body>
+</html>
