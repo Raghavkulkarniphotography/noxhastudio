@@ -114,15 +114,15 @@
         /* Video Container for Layering */
         .video-background {
             position: absolute; 
-            top: 35%; /* Moved UP from 50% to reduce top spacing */
+            top: 35%; 
             left: 50%; 
             transform: translate(-50%, -50%);
-            width: 64%; /* Reduced from 80% to 64% (20% reduction) */
-            height: 64%; /* Reduced from 80% to 64% */
+            width: 100%; /* Changed to full width (horizontal) */
+            height: 80%; /* Adjusted height to maintain aspect ratio without cropping */
             z-index: 0; /* Behind Text */
             opacity: 0.9; 
             pointer-events: none;
-            overflow: hidden; /* Ensure zoomed video doesn't overflow */
+            overflow: visible; /* Allow video to fit naturally */
         }
         
         /* Delays */
@@ -200,8 +200,8 @@
             
             <!-- VIDEO ANIMATION (Behind Text) -->
             <div class="video-background">
-                <!-- Added scale-125 to zoom in (crop) and object-contain to keep ratio -->
-                <video autoplay muted playsinline loop class="w-full h-full object-contain scale-125 transform origin-center">
+                <!-- Removed scale-125 to stop cropping. Kept object-contain to ensure it fits fully. -->
+                <video autoplay muted playsinline loop class="w-full h-full object-contain transform origin-center">
                     <source src="./fins%20noxha.mp4" type="video/mp4">
                 </video>
             </div>
