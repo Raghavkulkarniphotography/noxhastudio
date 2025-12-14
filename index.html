@@ -37,6 +37,9 @@
                     animation: {
                         'slide-up': 'slideUp 1s ease-out forwards',
                         'flicker': 'flicker 0.5s linear forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 7s ease-in-out infinite 2s',
+                        'float-reverse': 'float-reverse 8s ease-in-out infinite',
                     },
                     keyframes: {
                         slideUp: {
@@ -53,6 +56,14 @@
                             '60%': { opacity: '1' },
                             '70%': { opacity: '0.8' },
                             '100%': { opacity: '1' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        'float-reverse': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(15px)' },
                         }
                     }
                 }
@@ -117,12 +128,12 @@
             top: 35%; 
             left: 50%; 
             transform: translate(-50%, -50%);
-            width: 100%; /* Changed to full width (horizontal) */
-            height: 80%; /* Adjusted height to maintain aspect ratio without cropping */
+            width: 100%; /* Full width */
+            height: 80%; 
             z-index: 0; /* Behind Text */
             opacity: 0.9; 
             pointer-events: none;
-            overflow: visible; /* Allow video to fit naturally */
+            overflow: visible; 
         }
         
         /* Delays */
@@ -154,7 +165,7 @@
             <img src="./noxha-logo-removebg-preview.png" alt="NOXHA" class="w-24 h-24 object-contain brightness-0 invert">
         </div>
         <div class="text-white text-center pointer-events-none transition-opacity duration-300" id="tap-text">
-            <p class="text-xs uppercase tracking-[0.5em] animate-pulse opacity-90">Enter the Narrative</p>
+            <p class="text-xs uppercase tracking-[0.5em] animate-pulse opacity-90">Unveil the Vision</p>
         </div>
     </div>
 
@@ -171,7 +182,7 @@
         <!-- Navigation -->
         <nav class="fixed w-full z-50 px-6 py-6 flex justify-between items-center bg-white/90 backdrop-blur-md border-b border-border transition-all duration-300">
             <a href="#" class="block hover:scale-105 transition-transform duration-300 cursor-hover flex items-center gap-3">
-                <img src="./noxha-logo.png" alt="NOXHA" class="w-10 h-10 md:w-12 md:h-12 object-contain" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
+                <img src="./noxha-logo-removebg-preview.png" alt="NOXHA" class="w-10 h-10 md:w-12 md:h-12 object-contain" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';">
                 <span id="logo-text" class="hidden text-2xl font-display font-bold tracking-tighter text-black">NOXHA</span>
             </a>
             
@@ -200,10 +211,24 @@
             
             <!-- VIDEO ANIMATION (Behind Text) -->
             <div class="video-background">
-                <!-- Removed scale-125 to stop cropping. Kept object-contain to ensure it fits fully. -->
                 <video autoplay muted playsinline loop class="w-full h-full object-contain transform origin-center">
                     <source src="./fins%20noxha.mp4" type="video/mp4">
                 </video>
+            </div>
+
+            <!-- Floating 3D Elements Container -->
+            <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                <!-- NOXHA-34 (X shape) - Top Left -->
+                <img src="./NOXHA-34.png" alt="Abstract Shape" class="absolute top-[15%] left-[5%] md:left-[10%] w-16 md:w-24 opacity-80 animate-float">
+                
+                <!-- NOXHA-36 (Triangle) - Top Right -->
+                <img src="./NOXHA-36.png" alt="Abstract Shape" class="absolute top-[20%] right-[5%] md:right-[10%] w-12 md:w-20 opacity-80 animate-float-delayed">
+                
+                <!-- NOXHA-37 (Lines) - Bottom Left -->
+                <img src="./NOXHA-37.png" alt="Abstract Shape" class="absolute bottom-[25%] left-[5%] md:left-[10%] w-14 md:w-24 opacity-80 animate-float-reverse">
+                
+                <!-- NOXHA-35 (Flower/Spiky) - Bottom Right -->
+                <img src="./NOXHA-35.png" alt="Abstract Shape" class="absolute bottom-[20%] right-[5%] md:right-[10%] w-20 md:w-32 opacity-80 animate-float">
             </div>
 
             <!-- Content Layer (In Front of Video) -->
@@ -213,7 +238,6 @@
                 <div class="h-10 md:h-20"></div>
 
                 <!-- MAIN HEADLINE -->
-                <!-- Adjusted typography scaling for mobile: text-3xl on mobile, text-6xl on tablet, text-[10rem] on desktop -->
                 <h1 class="text-3xl md:text-6xl lg:text-[10rem] font-display font-medium leading-[0.9] md:leading-[0.85] tracking-tighter mb-4 md:mb-6 text-black z-10 relative mix-blend-multiply">
                     <div class="hero-text-holder"><span class="block hero-text delay-300 text-outline cursor-default">STUDIO</span></div>
                     <div class="hero-text-holder"><span class="block hero-text delay-400">NOXHA</span></div>
@@ -329,8 +353,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-16 lg:gap-32">
                     <div class="relative group fade-up flex flex-col items-center text-center md:block md:text-left">
                         <div class="img-zoom-container w-32 h-32 md:w-full md:h-[500px] bg-gray mb-8 relative rounded-full md:rounded-lg overflow-hidden flex items-center justify-center shadow-lg md:shadow-none">
-                            <!-- Removed absolute inset-0 and grayscale to fix centering and visibility -->
-                            <img src="./bhakti-image.jpg" alt="Bhakti Kulkarni" class="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700">
+                            <img src="./bhakti-image.jpg" alt="Bhakti Kulkarni" class="w-full h-full object-cover object-center grayscale group-hover:grayscale-0 transition-all duration-700">
                         </div>
                         <div class="flex flex-col md:flex-row justify-between items-center md:items-baseline border-b-0 md:border-b border-black/10 pb-4 mb-4 w-full">
                             <h3 class="text-2xl md:text-2xl font-bold text-black group-hover:text-noxha transition-colors">Bhakti Kulkarni</h3>
@@ -342,7 +365,6 @@
                     </div>
                     <div class="relative group md:mt-32 fade-up delay-200 flex flex-col items-center text-center md:block md:text-left">
                         <div class="img-zoom-container w-32 h-32 md:w-full md:h-[500px] bg-gray mb-8 relative rounded-full md:rounded-lg overflow-hidden flex items-center justify-center shadow-lg md:shadow-none">
-                            <!-- Removed absolute inset-0 and grayscale to fix centering and visibility -->
                             <img src="./raghav-photo.jpg" alt="Raghav Kulkarni" class="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700">
                         </div>
                         <div class="flex flex-col md:flex-row justify-between items-center md:items-baseline border-b-0 md:border-b border-black/10 pb-4 mb-4 w-full">
